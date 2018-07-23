@@ -19,7 +19,7 @@ I like projects like Monolog, but they lack basic conveniences I like about the 
 ## Installation
 
 ```
-composer require bmcminn/minilog
+TBA... but you can just copy Minilog.php into your project until I get this live on Packagist.org
 ```
 
 
