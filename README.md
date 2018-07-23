@@ -3,6 +3,19 @@
 A dependency free PHP logging utility that just friggin' works :)
 
 
+## Why yet another logging utility?
+
+I like projects like Monolog, but they lack basic conveniences I like about the native `console.log()` in JavaScript; plus I have a niceities baked into Minilog that you may like as well:
+
+- dependency free
+- Each log method accepts N arguments and automagically concatenates them into a log message (just like JS console.log!!! :D)
+- automagically JSON encodes arrays and objects (just like JS console.log :P), and tags the output accordingly
+- automagically determines which CLI stream to write to; allowing for CLI logging when running on PHP's internal server
+- automagically applies color coding of CLI messages based on log level severity
+- conditionally allows each logger instance to log the calling file and line number so you know where the log message originated from
+- automagically prepends each log file with the Y-M-D for daily log rotation
+
+
 ## Installation
 
 ```
