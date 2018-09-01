@@ -10,5 +10,10 @@
             "email": "labs@gbox.name"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Gbox\\": "./"
+        }
+    },
     "require": {}
 }
