@@ -17,13 +17,18 @@ I like projects like Monolog, but they lack basic conveniences I like about the 
 
 
 ## Installation
+Open up your favorite CLI and enter the typical `composer require` command:
 
+```sh
+> composer require gbox/minilog
 ```
-composer require bmcminn/minilog
-```
+
+BOOM! Now get logging!
 
 
 ## Usage:
+
+Using `Minilog` is pretty straightforward. You define a `new \Gbox\Minilog()` class intance, you pass in the name of the logger context, and you may pass an option associative array of options to configure it for your needs.
 
 ```php
 <?php
@@ -32,20 +37,20 @@ require "vendor/autoload.php";
 
 //                  Minilog($logname [, $options[] ])
 $Logger = new \Gbox\Minilog('logName', [
-    // defines where log entries should echo to the console
+    // write log entries to the console
     'console'    => true            // bool   : defaults true
 
     // defines where log files should be written to
     'dir'        => './logs'        // string : defaults '.'
 
-    // defines which RFC 5424 levels to log
+    // defines the minimum RFC 5424 level to log
     'level'      => 'DEBUG'         // string : defaults 'DEBUG'
 
     // defines whether to log the path and line number of the log call
     'linenos'    => true            // bool   : defaults true
 
     // defines the timestamp format
-    'timestamp'  => '[Y-m-d H:m:s]' // string :
+    'timestamp'  => '[Y-m-d H:m:s]' // string : you can change this if you want
 ]);
 
 
