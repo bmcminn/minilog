@@ -38,19 +38,19 @@ require "vendor/autoload.php";
 //                  Minilog($logname [, $options[] ])
 $Logger = new \Gbox\Minilog('logName', [
     // write log entries to the console
-    'console'    => true            // bool   : defaults true
+    'console'    => true,            // bool   : defaults true
 
     // defines where log files should be written to
-    'dir'        => './logs'        // string : defaults '.'
+    'dir'        => './logs',        // string : defaults '.'
 
     // defines the minimum RFC 5424 level to log
-    'level'      => 'DEBUG'         // string : defaults 'DEBUG'
+    'level'      => 'DEBUG',         // string : defaults 'DEBUG'
 
     // defines whether to log the path and line number of the log call
-    'linenos'    => true            // bool   : defaults true
+    'linenos'    => true,            // bool   : defaults true
 
     // defines the timestamp format
-    'timestamp'  => '[Y-m-d H:m:s]' // string : you can change this if you want
+    'timestamp'  => '[Y-m-d H:m:s]', // string : you can change this if you want
 ]);
 
 
