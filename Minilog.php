@@ -108,6 +108,13 @@ class Minilog {
 
         // write file to disk and append log message
         try {
+
+            $dirPath = dirname($this->filepath);
+
+            if (!is_dir($dirPath)) {
+                mkdir($dirPath, 0777, true);
+            }
+
             file_put_contents($this->filepath, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
 
             if ($this->console) {
