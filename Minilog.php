@@ -4,15 +4,22 @@ namespace Gbox;
 
 class Minilog {
 
-    private $dateFormat  = 'Y-m-d';
+    const DS = DIRECTORY_SEPARATOR;
 
-    private $levels;
-    private $name;
-    private $linenos;
-    private $timestamp;
-    private $filepath;
-    private $logLevel;
-    private $console;
+    private static $dateFormat  = 'Y-m-d';
+
+    private static $level;
+    private static $levels;
+    private static $name;
+    private static $linenos;
+    private static $timestamp;
+    private static $filepath;
+    private static $logLevel;
+    private static $console;
+
+
+    private static $instance;
+
 
     /**
      * Constructor for new logger instances
@@ -24,13 +31,13 @@ class Minilog {
      * @param bool      $opts['linenos']    defaults true;    defines whether to log the path and line number of the log call
      * @param string    $opts['timestamp']  defines the timestamp format
      */
-    function __construct($name, $opts) {
+    public static function setup($name, $opts = []) {
 
-        $this->name = $name;
+        self::$name = $name;
 
         $defaults = [
             'console'   => true,
-            'dir'       => '.',
+            'dir'       => '',
             'level'     => 'DEBUG',
             'linenos'   => false,
             'timestamp' => '[Y-m-d H:m:s]',
@@ -41,22 +48,22 @@ class Minilog {
         $opts['level'] = strtoupper($opts['level']);
 
         // TODO: validate the user defined one of the given log levels
-        $this->levels = [
-            'DEBUG'     => [ 100, "\e[0;30;42m" ],     // Detailed debug information.
-            'INFO'      => [ 200, "\e[0m" ],     // Interesting events. Examples: User logs in, SQL logs.
-            'NOTICE'    => [ 250, "\e[1;36;40m" ],     // Normal but significant events.
-            'WARNING'   => [ 300, "\e[1;33;93m" ],     // Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
-            'ERROR'     => [ 400, "\e[91m" ],     // Runtime errors that do not require immediate action but should typically be logged and monitored.
-            'CRITICAL'  => [ 500, "\e[45m" ],     // Critical conditions. Example: Application component unavailable, unexpected exception.
-            'ALERT'     => [ 550, "\e[0;30;43m" ],     // Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
-            'EMERGENCY' => [ 600, "\e[41m" ],     // Emergency: system is unusable.
+        self::$levels = [
+            'DEBUG'     => [ 100, "\e[0;30;42m" ],  // Detailed debug information.
+            'INFO'      => [ 200, "\e[0m" ],        // Interesting events. Examples: User logs in, SQL logs.
+            'NOTICE'    => [ 250, "\e[1;36;40m" ],  // Normal but significant events.
+            'WARNING'   => [ 300, "\e[1;33;93m" ],  // Exceptional occurrences that are not errors. Examples: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
+            'ERROR'     => [ 400, "\e[91m" ],       // Runtime errors that do not require immediate action but should typically be logged and monitored.
+            'CRITICAL'  => [ 500, "\e[45m" ],       // Critical conditions. Example: Application component unavailable, unexpected exception.
+            'ALERT'     => [ 550, "\e[0;30;43m" ],  // Action must be taken immediately. Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
+            'EMERGENCY' => [ 600, "\e[41m" ],       // Emergency: system is unusable.
         ];
 
-        $this->level        = $this->levels[$opts['level']][0];
-        $this->filepath     = $opts['dir'] . '/' . date($this->dateFormat) . '-' . $this->name . '.log';
-        $this->timestamp    = $opts['timestamp'];
-        $this->linenos      = $opts['linenos'];
-        $this->console      = $opts['console'];
+        self::$level        = self::$levels[$opts['level']][0];
+        self::$filepath     = getcwd() . self::DS . $opts['dir'] . self::DS . self::$name . '-' . date(self::$dateFormat) . '.log';
+        self::$timestamp    = $opts['timestamp'];
+        self::$linenos      = $opts['linenos'];
+        self::$console      = $opts['console'];
     }
 
 
@@ -66,19 +73,19 @@ class Minilog {
      * @param  [type] $args [description]
      * @return [type]       [description]
      */
-    private function _logger($label, $weight, ...$args) {
+    private static function _logger($label, $weight, ...$args) {
 
         // ignore logging anything below the desired log level
-        if ($weight < $this->logLevel) { return; }
+        if ($weight < self::$logLevel) { return; }
 
         // init our log message
         $msg = [
-            date($this->timestamp),     // log timestamp
-            str_pad("{$this->name}.{$label}:", strlen($this->name . '.emergency:')),   // log name and message type annotations
+            date(self::$timestamp),     // log timestamp
+            str_pad(self::$name . ".{$label}:", strlen(self::$name . '.emergency:')),   // log name and message type annotations
         ];
 
         // log the call file and line number on Debug statements or if the logger logs all line numbers
-        if ($label === 'DEBUG' || $this->linenos) {
+        if ($label === 'DEBUG' || self::$linenos) {
             $debug = debug_backtrace()[1];
 
             $debug['file'] = substr($debug['file'], strlen(getcwd()) + 1);
@@ -109,23 +116,23 @@ class Minilog {
         // write file to disk and append log message
         try {
 
-            $dirPath = dirname($this->filepath);
+            $dirPath = dirname(self::$filepath);
 
             if (!is_dir($dirPath)) {
                 mkdir($dirPath, 0777, true);
             }
 
-            file_put_contents($this->filepath, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+            file_put_contents(self::$filepath, $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
 
-            if ($this->console) {
+            if (self::$console) {
 
-                $color = $this->levels[$label][1];
+                $color = self::$levels[$label][1];
 
-                $this->_print($color . $msg . "\e[0m" . PHP_EOL);
+                self::_print($color . $msg . "\e[0m" . PHP_EOL);
             }
 
         } catch (Exception $e) {
-            $this->_print('Caught exception: ' . $e->getMessage() . PHP_EOL);
+            self::_print('Caught exception: ' . $e->getMessage() . PHP_EOL);
 
         }
 
@@ -138,7 +145,7 @@ class Minilog {
      * @param  string $msg The message to be written to the console
      * @return null
      */
-    private function _print($msg) {
+    private static function _print($msg) {
         if (php_sapi_name() === 'cli-server') {
             file_put_contents("php://stdout", $msg);
 
@@ -149,43 +156,43 @@ class Minilog {
     }
 
 
-    public function debug(...$args) {
-        return $this->_logger('DEBUG', 100, $args);
+    public static function debug(...$args) {
+        return self::_logger('DEBUG', 100, $args);
     }
 
 
-    public function info(...$args) {
-        return $this->_logger('INFO', 200, $args);
+    public static function info(...$args) {
+        return self::_logger('INFO', 200, $args);
     }
 
 
-    public function notice(...$args) {
-        return $this->_logger('NOTICE', 250, $args);
+    public static function notice(...$args) {
+        return self::_logger('NOTICE', 250, $args);
     }
 
 
-    public function warning(...$args) {
-        return $this->_logger('WARNING', 300, $args);
+    public static function warning(...$args) {
+        return self::_logger('WARNING', 300, $args);
     }
 
 
-    public function error(...$args) {
-        return $this->_logger('ERROR', 400, $args);
+    public static function error(...$args) {
+        return self::_logger('ERROR', 400, $args);
     }
 
 
-    public function critical(...$args) {
-        return $this->_logger('CRITICAL', 500, $args);
+    public static function critical(...$args) {
+        return self::_logger('CRITICAL', 500, $args);
     }
 
 
-    public function alert(...$args) {
-        return $this->_logger('ALERT', 550, $args);
+    public static function alert(...$args) {
+        return self::_logger('ALERT', 550, $args);
     }
 
 
-    public function emergency(...$args) {
-        return $this->_logger('EMERGENCY', 600, $args);
+    public static function emergency(...$args) {
+        return self::_logger('EMERGENCY', 600, $args);
     }
 
 }
