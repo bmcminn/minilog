@@ -2,7 +2,7 @@
     "name": "gbox/minilog",
     "description": "A dependency free PHP logging utility that just friggin' works :)",
     "type": "library",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "license": "MIT",
     "authors": [
         {
