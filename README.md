@@ -35,8 +35,10 @@ Using `Minilog` is pretty straightforward. You define a `new \Gbox\Minilog()` cl
 
 require "vendor/autoload.php";
 
-//                  Minilog($logname [, $options[] ])
-$Logger = new \Gbox\Minilog('logName', [
+use Gbox\Minilog as Logger;
+
+// Minilog($logname [, $options[] ])
+Logger::setup('logName', [
     // write log entries to the console
     'console'    => true,            // bool   : defaults true
 
@@ -54,14 +56,14 @@ $Logger = new \Gbox\Minilog('logName', [
 ]);
 
 
-$Logger->debug('testing', 'message', 'here');     // testing message here
-$Logger->info('testing', 'message', 'here');      // testing message here
-$Logger->notice('testing', 'message', 'here');    // testing message here
-$Logger->warning('testing', 'message', 'here');   // testing message here
-$Logger->error('testing', 'message', 'here');     // testing message here
-$Logger->critical('testing', 'message', 'here');  // testing message here
-$Logger->alert('testing', 'message', 'here');     // testing message here
-$Logger->emergency('testing', 'message', 'here'); // testing message here
+Logger::debug('testing', 'message', 'here');     // testing message here
+Logger::info('testing', 'message', 'here');      // testing message here
+Logger::notice('testing', 'message', 'here');    // testing message here
+Logger::warning('testing', 'message', 'here');   // testing message here
+Logger::error('testing', 'message', 'here');     // testing message here
+Logger::critical('testing', 'message', 'here');  // testing message here
+Logger::alert('testing', 'message', 'here');     // testing message here
+Logger::emergency('testing', 'message', 'here'); // testing message here
 ```
 
 
